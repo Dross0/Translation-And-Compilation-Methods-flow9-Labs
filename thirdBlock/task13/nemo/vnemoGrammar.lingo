@@ -1,0 +1,29 @@
+prog = ws declaration*:d ws statement*:s {VNemoProgram(:d, :s)};
+
+declaration = ws "var" ws name$n ws ":" ws type:t ws {Variable($n, :t)};
+
+type  = int | array;
+int   =  ws "int" ws {NemoInt()};
+array =  ws "[" ws type:t "]" ws {NemoArray(:t)};
+
+statement = assign | ifelse | print;
+assign = ws (digit+)$id ws ":" ws name$v ws ":=" ws expr:e ws "goto" ws "{" ws label*:labels ws "}" ws {AssignStatement(s2i($id), $v, :e, :labels)};
+
+ifelse = ws (digit+)$id ws ":" ws "if" ws expr:l ws comparisonOp$o ws expr:r ws "then" ws "{" ws label*:ig ws "}" ws "else" ws "{" ws label*:eg ws "}" ws {IfElseStatement(s2i($id), $o, :l, :r, :ig, :eg)};
+print = ws (digit+)$id ws ":" ws "print" ws "(" expr:e ")" ws "goto" ws "{" ws label*:labels ws "}" ws {PrintStatement(s2i($id), :e, :labels)};
+
+expr = bin | const | app | upd | var;
+bin = ws "(" expr:l binaryOp$s expr:r ")" ws {BinaryOpExpr($s, :l, :r)};
+const = ws digit+$d ws {ConstExpr(s2i ($d))};
+app  = ws "app" ws "(" ws expr:array "," ws expr:index ")" ws {AppExpr(:array, :index)};
+upd = ws "upd" ws "(" ws expr:array "," ws expr:index "," ws expr:newValue ")" ws {UpdExpr(:array, :index, :newValue)};
+var = ws name$l ws {VarExpr($l)};      
+
+comparisonOp = ("==" | "<=" | ">=" | "<" | ">" | "!=");
+binaryOp = ("+" | "*" | "/" | "-" | "%");
+
+name = letter+;
+label = ws digit+$d ws ","? ws { Label(s2i($d)) };
+letter = 'a'-'z';
+digit = '0'-'9';
+ws = (' ' | '\t' | '\n' | '\r')*;

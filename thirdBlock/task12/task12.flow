@@ -1,0 +1,11 @@
+import lingo/pegcode/driver;
+import nemo/all;
+
+main() {
+    nemoCode = getFileContent("np3.nemo");
+    nemoProgram = str2program(nemoCode);
+    nemoProgramStr = program2str(nemoProgram);
+    println(nemoProgramStr);
+    println(nemoProgram);
+    quit(0);
+}

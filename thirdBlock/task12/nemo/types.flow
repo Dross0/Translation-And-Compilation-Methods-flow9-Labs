@@ -1,0 +1,6 @@
+
+export{
+    NemoType::= NemoInt, NemoArray;
+    NemoInt();
+    NemoArray(type: NemoType);
+}

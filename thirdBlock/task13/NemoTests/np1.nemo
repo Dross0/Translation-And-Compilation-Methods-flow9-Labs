@@ -1,0 +1,9 @@
+VAR x: INT;
+VAR times: INT;
+(
+    x := 0;
+    times := 100;
+    WHILE y < times DO (
+        x := (x + 1)
+    )
+)

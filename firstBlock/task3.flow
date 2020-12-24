@@ -1,0 +1,43 @@
+import runtime;
+import ds/array;
+
+fib1(n: int) -> [int]{
+    if (n == 0){
+        [0];
+    }
+    else if (n == 1){
+        [0, 1];
+    }
+    else{
+        arr = fib1(n-1);
+        concat(arr, [arr[n-1] + arr[n-2]]);
+    }
+    
+}
+
+helpFib2(n: int, a: int, b: int, res: ref [int]) -> int{
+    if (n > 0){
+        refArrayPush(res, a);
+        helpFib2(n - 1, b, a+b, res);
+    }
+    else{
+        refArrayPush(res, a);
+        a;
+    }
+}
+
+fib2(n: int) -> [int]{
+    if (n == 0){
+        [];
+    }
+    else{
+        arr = ref [];
+        i = helpFib2(n-1, 0, 1, arr);
+        ^arr;
+    }
+}
+
+main(){
+    println(fib1(5));
+    println(fib2(5));
+}

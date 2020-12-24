@@ -1,0 +1,36 @@
+program = variableDeclaration*:d ws operator:b {ProgramOnNemo(:d, :b)};
+
+variableDeclaration = ws "VAR" ws letter+$n ws ":" ws type:t ws ";" ws {Variable($n, :t)};
+
+type  = int | array;
+int   =  ws "INT" ws {NemoInt()};
+array =  ws "[" ws type:t "]" ws {NemoArray(:t)};
+
+operator = assign | print | loop | test | choice | seq | ifWithElse | while;
+assign = ws variable:v ws ":=" ws expr:e {AssignOp(:v, :e)};
+print = ws "PRINT(" expr:e ")" ws {PrintOp(:e)};
+loop = ws "(" ws operator:op ws ")*" ws {LoopOp(:op)};
+test = ws "(" ws expr:l ws comparisonOp$o ws expr:r ws ")?" ws {TestOp($o, :l, :r)};
+
+choice = ws "(" operator:f choiceOperators*:o ")" ws {createChoiceOp(:f, :o)};
+seq = ws "(" operator:f seqOperators*:o ")" ws {createSeqOp(:f, :o)};
+ifWithElse = ws "IF" ws expr:l comparisonOp$o expr:r ws "THEN" ws operator:if ws "ELSE" ws operator:else ws {createIfElseOp($o, :l, :r, :if, :else)};
+while = ws "WHILE" ws expr:l comparisonOp$o expr:r ws "DO" ws operator:b ws {createWhileOp($o, :l, :r, :b)};
+
+expr = binaryOperator | const | app | upd | variable;
+binaryOperator = ws "(" expr:l binaryOp$s expr:r ")" ws {BinaryOpExpr($s, :l, :r)};
+const = ws digit+$d ws {ConstExpr(s2i($d))};
+app  = ws "(" ws "APP" ws "(" expr:array "," expr:index ")" ws ")" ws {AppExpr(:array, :index)};
+upd = ws "(" ws "UPD" ws "(" expr:array "," expr:index "," expr:newValue ")" ws ")" ws {UpdExpr(:array, :index, :newValue)};
+variable = ws letter+$l ws {VarExpr($l)};
+
+comparisonOp = ("==" | "<=" | ">=" | "<" | ">" | "!=");
+binaryOp = ("+" | "*" | "/" | "-" | "%");
+
+choiceOperators =  ws "U" operator;
+seqOperators = ws ";" operator;
+
+name = letter+;
+letter = 'a'-'z';
+digit = '0'-'9';
+ws = (' ' | '\t' | '\n' | '\r')*;

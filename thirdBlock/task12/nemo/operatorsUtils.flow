@@ -1,0 +1,64 @@
+import string;
+import nemo/operators;
+
+export{
+    createChoiceOp(data: [flow]) -> ChoiceOp;
+    createSeqOp(data: [flow]) -> SeqOp;
+    createIfElseOp(data: [flow]) -> ChoiceOp;
+    createWhileOp(data: [flow]) -> LoopOp;
+}
+
+
+createChoiceOp(data: [flow]) -> ChoiceOp{
+    firstOperator = data[0];
+    otherOperators = data[1];
+    ChoiceOp(concat([firstOperator], otherOperators));
+}
+createSeqOp(data: [flow]) -> SeqOp{
+    firstOperator = data[0];
+    otherOperators = data[1];
+    SeqOp(concat([firstOperator], otherOperators));
+}
+
+getReverseComparisonOperator(comparisonOp: string) -> string{
+    if(comparisonOp == "==") {
+       "!=";
+    }else if(comparisonOp == "<=") {
+       ">";
+    }else if(comparisonOp == ">="){
+       "<";
+    }else if(comparisonOp == "<") {
+       ">=";
+    }else if(comparisonOp == ">") {
+       "<=";
+    }else if(comparisonOp == "!=") {
+       "==";
+    }else {
+       comparisonOp;
+    }
+}
+
+createIfElseOp(data: [flow]) -> ChoiceOp {
+    comparisonOp = data[0];
+    l = data[1];
+    r = data[2];
+    ifCondition = TestOp(comparisonOp, l, r);
+    ifOperators = data[3];
+    ifSeq = SeqOp([ifCondition, ifOperators]);
+
+    elseCondition = TestOp(getReverseComparisonOperator(comparisonOp), l, r);
+    elseOperators = data[4];
+    elseSeq = SeqOp([elseCondition, elseOperators]);
+
+    ChoiceOp([ifSeq, elseSeq]);
+}
+
+createWhileOp(data: [flow]) -> LoopOp{
+    comparisonOp = data[0];
+    l = data[1];
+    r = data[2];
+    whileCondition = TestOp(comparisonOp, l, r);
+    operators = data[3];
+    mainLoop = LoopOp(SeqOp([whileCondition, operators]));
+    mainLoop;
+}

@@ -1,0 +1,11 @@
+import string;
+import nemo/vnemo/label;
+import nemo/expressions;
+
+
+export{
+    VNemoStatement::= AssignStatement, IfElseStatement, PrintStatement;
+    AssignStatement(id: int, var: string, expr: NemoExpression, goto : [Label]);
+    IfElseStatement(id: int, comparisonOp: string, lexpr: NemoExpression, rexpr: NemoExpression, ifGoto: [Label], elseGoto : [Label]);
+    PrintStatement(id: int, expr: NemoExpression, goto: [Label]);
+}

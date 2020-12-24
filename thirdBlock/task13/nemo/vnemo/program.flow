@@ -1,0 +1,6 @@
+import nemo/variables;
+import nemo/vnemo/statements;
+
+export{
+    VNemoProgram(declarations: [Variable], statements: [VNemoStatement]);
+}

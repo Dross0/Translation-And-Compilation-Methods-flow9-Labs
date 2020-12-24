@@ -1,0 +1,6 @@
+import nemo/variables;
+import nemo/operators;
+
+export{
+    ProgramOnNemo(declarations : [Variable], body : NemoOperator);
+}

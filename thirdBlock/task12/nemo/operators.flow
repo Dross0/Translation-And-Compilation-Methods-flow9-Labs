@@ -1,0 +1,13 @@
+import string;
+import nemo/expressions;
+
+export{
+    NemoOperator::= AssignOp, PrintOp, LoopOp, ChoiceOp, SeqOp, TestOp;
+
+    AssignOp(var: VarExpr, value: NemoExpression);
+    PrintOp(expr: NemoExpression);
+    LoopOp(operator: NemoOperator);
+    ChoiceOp(operators: [NemoOperator]);
+    SeqOp(operators: [NemoOperator]);
+    TestOp(operation: string, l: NemoExpression, r: NemoExpression);
+}

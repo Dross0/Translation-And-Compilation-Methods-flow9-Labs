@@ -1,0 +1,12 @@
+import runtime;
+import ds/array;
+import string;
+
+concatAndToStr(arr1: [int], arr2: [int]) -> [string]{
+    map(concat(arr1, arr2), \i -> i2s(i))
+}
+
+main () {
+  new_arr = concatAndToStr([1, 2, 3, 4], [5, 6]);
+  println(new_arr);
+}

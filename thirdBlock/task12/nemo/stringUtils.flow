@@ -1,0 +1,75 @@
+import string;
+import nemo/operators;
+import nemo/expressions;
+import nemo/programm;
+import nemo/variables;
+import nemo/types;
+import nemo/operatorsUtils;
+import lingo/pegcode/driver;
+
+
+export{
+    expr2str(e: NemoExpression) -> string;
+    operator2str(o: NemoOperator) -> string;
+    str2program(programText: string) -> ProgramOnNemo;
+    type2str(type: NemoType) -> string;
+    variableDeclaration2str(oneDecl: Variable) -> string;
+    variablesDeclarations2str(d: [Variable]) -> string;
+    program2str(nemoProg: ProgramOnNemo) -> string;
+}
+
+
+expr2str(e: NemoExpression) -> string{
+    switch(e) {
+        BinaryOpExpr(op, le, re): "(" + expr2str(le) + op + expr2str(re) + ")";
+        ConstExpr(v): i2s(v)
+        AppExpr(array, index): "APP(" + expr2str(array) + "," + expr2str(index) + ")";
+        UpdExpr(array, index, newValue): "UPD(" + expr2str(array) + "," + expr2str(index) + "," + expr2str(newValue) + ")";
+        VarExpr(name): name;
+    }
+}
+
+
+operator2str(o: NemoOperator) -> string{
+    switch(o){
+        AssignOp(var, value): expr2str(var) + ": = " + expr2str(value) + ";\n";
+        PrintOp(expr): "PRINT( " + expr2str(expr) + ")"+ ";\n";
+        LoopOp(operator): "( " +  operator2str(operator) + " )*"+ ";\n";
+        ChoiceOp(operators): "( " + strGlue(map(operators, operator2str), " U ") + ")"+ "\n";
+        SeqOp(operators): "( " + strGlue(map(operators, operator2str), "") + ")\n";
+		TestOp(operation, l, r): "( " + expr2str(l) + " " + operation + " " + expr2str(r) + ")?;\n";
+    }
+}
+
+
+str2program(programText: string) -> ProgramOnNemo {
+    treeSeq = setTree(defaultPegActions.t, "createSeqOp", createSeqOp);
+    treeChoice = setTree(treeSeq, "createChoiceOp", createChoiceOp);
+    treeIf = setTree(treeChoice, "createIfElseOp", createIfElseOp);
+    fullThree = setTree(treeIf, "createWhileOp", createWhileOp);
+    myPegActions = SemanticActions(fullThree);
+    nemoGrammar = "#include nemo/nemoGrammar.lingo";
+    parsic(compilePegGrammar(nemoGrammar), programText, myPegActions)
+}
+
+type2str(type: NemoType) -> string{
+    switch (type) {
+		NemoInt(): "INT";
+		NemoArray(arrtype): "[" + type2str(arrtype) + "]";
+	}
+}
+
+variableDeclaration2str(oneDecl: Variable) -> string{
+    "VAR " + oneDecl.name + " : " + type2str(oneDecl.type) + ";";
+}
+
+variablesDeclarations2str(d: [Variable]) -> string{
+  	strGlue(map(d, variableDeclaration2str), "\n"); 
+}
+
+
+program2str(nemoProg: ProgramOnNemo) -> string{
+    declarationsString = variablesDeclarations2str(nemoProg.declarations);
+    bodyString = operator2str(nemoProg.body);
+    declarationsString + "\n" + bodyString;
+}

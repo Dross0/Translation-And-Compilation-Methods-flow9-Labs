@@ -1,0 +1,6 @@
+import string;
+import nemo/types;
+
+export{
+    Variable(name: string, type: NemoType);
+}

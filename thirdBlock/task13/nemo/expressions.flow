@@ -1,0 +1,11 @@
+import string;
+
+export{
+    NemoExpression::= BinaryOpExpr, ConstExpr, AppExpr, UpdExpr, VarExpr;
+    BinaryOpExpr(op: string, l: NemoExpression, r: NemoExpression);
+    AppExpr(array: NemoExpression, index: NemoExpression);
+    UpdExpr(array: NemoExpression, index: NemoExpression, newValue: NemoExpression);
+    VarExpr(name: string);
+    ConstExpr(value: int);
+}
+
