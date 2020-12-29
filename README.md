@@ -16,7 +16,7 @@
 12. [Написать PEG-парсер модельного языка  НеМо.](https://github.com/Dross0/Translation-And-Compilation-Methods-flow9-Labs/tree/main/thirdBlock/task12)
 13. [Написать PEG-парсер для языка вируальной машины НеМо.](https://github.com/Dross0/Translation-And-Compilation-Methods-flow9-Labs/tree/main/thirdBlock/task13/nemo/vnemo)
 14. [Написать реализацию виртуальной машины НеМо, исполняющую программы на ее языке.](https://github.com/Dross0/Translation-And-Compilation-Methods-flow9-Labs/blob/main/thirdBlock/task13/nemo/vnemo/run.flow)
-15. ~~[Написать транслятор их модельного языка НеМо в язык его виртуальной машины.](#)~~
+15. [Написать транслятор их модельного языка НеМо в язык его виртуальной машины.](https://github.com/Dross0/Translation-And-Compilation-Methods-flow9-Labs/blob/main/thirdBlock/task12-15/nemo/vnemo/translator.flow)
 ## Блок 4. Реализации функционала формальной верификации для НеМо
 16. ~~[Придумать язык спецификаций для Немо.](#)~~
 17. ~~[Добавить в грамматику Немо язык спецификаций, дополнить парсер.](#)~~
