@@ -1,7 +1,7 @@
-var array : [int]
-var len : int
-var max : int
-var index : int
+var array : [int];
+var len : int;
+var max : int;
+var index : int;
 
 0: array := upd(array, 0, 1) goto {1}
 1: array := upd(array, 1, 100) goto {2}

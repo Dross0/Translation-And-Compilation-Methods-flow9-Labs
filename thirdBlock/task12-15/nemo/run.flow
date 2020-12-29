@@ -1,0 +1,40 @@
+import nemo/vnemo/translator;
+import nemo/vnemo/run;
+
+
+export{
+    executeProgram(program: ProgramOnNemo) -> void;
+    executeProgramWithSaveVNemoSrc(program: ProgramOnNemo, path: string) -> void;
+    execute(srcFilePath: string) -> void;
+    executeWithSaveVNemoSrc(srcFilePath: string, path: string) -> void;
+}
+
+
+executeProgram(program: ProgramOnNemo) -> void{
+    vNemoTranslatedSrc = translateNemoProgram(program);
+    vNemoProgramm = str2VNemoProgram(vNemoTranslatedSrc);
+    executeVNemoProgram(vNemoProgramm);
+}
+
+
+executeProgramWithSaveVNemoSrc(program: ProgramOnNemo, path: string) -> void{
+    vNemoTranslatedSrc = translateNemoProgram(program);
+    setFileContent(path, vNemoTranslatedSrc);
+    vNemoProgramm = str2VNemoProgram(vNemoTranslatedSrc);
+    executeVNemoProgram(vNemoProgramm);
+}
+
+
+execute(srcFilePath: string) -> void{
+    src = getFileContent(srcFilePath);
+    nemoProgram = str2program(src);
+    executeProgram(nemoProgram);
+}
+
+
+
+executeWithSaveVNemoSrc(srcFilePath: string, path: string) -> void{
+    src = getFileContent(srcFilePath);  
+    nemoProgram = str2program(src);
+    executeProgramWithSaveVNemoSrc(nemoProgram, path);
+}

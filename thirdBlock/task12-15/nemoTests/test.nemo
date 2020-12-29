@@ -2,8 +2,9 @@ VAR x: INT;
 VAR times: INT;
 (
     x := 0;
-    times := 100;
-    WHILE y < times DO (
+    times := 10;
+    WHILE x < times DO (
+        PRINT(x);
         x := (x + 1)
     )
 )

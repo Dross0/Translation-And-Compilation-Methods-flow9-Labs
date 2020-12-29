@@ -1,0 +1,98 @@
+import nemo/stringUtils;
+
+
+export{
+    translateNemoProgram(program : ProgramOnNemo) -> string;
+}
+
+TranslatorState(src: string, maxLabel: int, prevStateMaxLabel: int);
+
+translateNemoProgram(program: ProgramOnNemo) -> string {
+    B2S(program.body, translateDeclarations(program.declarations)).src;
+}
+
+makeSrcLine(src: string) -> string{
+    src + "\n";
+}
+
+translateDeclarations(decls: [Variable]) -> TranslatorState {
+    TranslatorState(makeSrcLine(variablesDeclarations2str(decls)), 0, -1);
+}
+
+createTrueIfStatement(label: int, goto: [int]) -> IfElseStatement{
+    IfElseStatement(label, "==", ConstExpr(0), ConstExpr(0), map(goto, \id -> Label(id)), []);
+}
+
+loopB2S(loopBody: NemoOperator, prevState: TranslatorState) -> TranslatorState{
+    gotoLabel = prevState.maxLabel + 1;
+    translatedBody = B2S(loopBody, TranslatorState("", gotoLabel, prevState.maxLabel));
+    end = translatedBody.maxLabel;
+    startLoop = makeSrcLine(statement2str(createTrueIfStatement(prevState.maxLabel, [gotoLabel, end+1])));
+    backToStart = makeSrcLine(statement2str(createTrueIfStatement(end, [prevState.maxLabel])));
+    TranslatorState(
+        prevState.src + startLoop + translatedBody.src + backToStart,
+        end + 1,
+        prevState.maxLabel
+    );
+}
+
+splitOperators(operators: [NemoOperator], prevLabel: int) -> [TranslatorState]{
+    fold(
+        tail(operators),
+        [B2S(operators[0], TranslatorState("", prevLabel + 1, prevLabel))],
+        \acc, nextOperator -> concat(acc, [B2S(nextOperator, TranslatorState("", acc[length(acc)-1].maxLabel + 1, acc[length(acc)-1].maxLabel))])
+    );
+}
+
+makeSrcFromChoiceOperators(operatorsStates: [TranslatorState]) -> string{
+    lastOperatorState = operatorsStates[length(operatorsStates) - 1];
+    end = lastOperatorState.maxLabel;
+    concatStrings(map(take(operatorsStates, length(operatorsStates) - 1), 
+        \state -> state.src + makeSrcLine(statement2str(createTrueIfStatement(state.maxLabel, [end]))))
+    ) + lastOperatorState.src;
+}
+
+choiceB2S(operators: [NemoOperator], prevState: TranslatorState) -> TranslatorState{
+    operatorsStates = splitOperators(operators, prevState.maxLabel);
+    nextLabels = map(operatorsStates, \state -> state.maxLabel);
+    operatorsStartLabels = concat([prevState.maxLabel + 1], map(take(nextLabels, length(nextLabels) - 1), \label -> label + 1)); 
+    startChoice = makeSrcLine(statement2str(createTrueIfStatement(prevState.maxLabel, operatorsStartLabels)));
+    operatorsSrc = makeSrcFromChoiceOperators(operatorsStates);
+
+    TranslatorState(
+        prevState.src 
+        + startChoice
+        + operatorsSrc,
+    operatorsStates[length(operatorsStates) - 1].maxLabel,
+    prevState.maxLabel
+    );
+}
+
+assignB2S(var: VarExpr, expr: NemoExpression, prevState: TranslatorState) -> TranslatorState{
+    gotoLabel = prevState.maxLabel + 1;
+    newSrcTranslatedLine = makeSrcLine(statement2str(AssignStatement(prevState.maxLabel, var.name, expr, [Label(gotoLabel)])));
+	TranslatorState(prevState.src + newSrcTranslatedLine, gotoLabel, prevState.maxLabel);
+}
+
+printB2S(expr: NemoExpression, prevState: TranslatorState) -> TranslatorState{
+    gotoLabel = prevState.maxLabel + 1;
+    newSrcTranslatedLine = makeSrcLine(statement2str(PrintStatement(prevState.maxLabel, expr, [Label(gotoLabel)])));
+    TranslatorState(prevState.src + newSrcTranslatedLine, gotoLabel, prevState.maxLabel);
+}
+
+testB2S(comparisonOp: string, lexpr: NemoExpression, rexpr: NemoExpression, prevState: TranslatorState) -> TranslatorState{
+    gotoLabel = prevState.maxLabel + 1;
+    newSrcTranslatedLine = makeSrcLine(statement2str(IfElseStatement(prevState.maxLabel, comparisonOp, lexpr, rexpr, [Label(gotoLabel)], [])));
+    TranslatorState(prevState.src + newSrcTranslatedLine, gotoLabel, prevState.maxLabel);
+}
+
+B2S(operatorState : NemoOperator, prevState : TranslatorState) -> TranslatorState{
+	switch(operatorState){
+		AssignOp(var, expr): assignB2S(var, expr, prevState);
+        PrintOp(expr) : printB2S(expr, prevState);
+		TestOp(comparisonOp, lexpr, rexpr) : testB2S(comparisonOp, lexpr, rexpr, prevState);
+		SeqOp(operators) : fold(operators, prevState, \currentState, nextOperator -> B2S(nextOperator, currentState));
+		ChoiceOp(operators) : choiceB2S(operators, prevState);
+		LoopOp(loopOperator) : loopB2S(loopOperator, prevState);
+	}
+}

@@ -11,13 +11,17 @@ Array  (arr : [Value]);
 MemoryState(vars : Tree<string, Value>);
 Configuration(label : int, state : MemoryState);
 
-executeNextStatement(program : VNemoProgram, configuration : Configuration) -> Set<Configuration>{
-    statement = program.statements[configuration.label];
-	switch (statement) {
-		AssignStatement(label, var, expr, goto)                              : assignStatementExecute(var, expr, goto, configuration);
-		IfElseStatement(label, comparisonOp, lexpr, rexpr, ifGoto, elseGoto) : ifElseStatementExecute(comparisonOp, lexpr, rexpr, ifGoto, elseGoto, configuration);
-		PrintStatement(label, expr, goto)                                    : printStatementExcecute(expr, goto, configuration); 
-	}
+executeNextStatement(program : VNemoProgram, configuration : Configuration, maxLabel: int) -> Set<Configuration>{
+    if (configuration.label > maxLabel){
+        emptyConfigurationSet();
+    } else{
+        statement = program.statements[configuration.label];
+        switch (statement) {
+            AssignStatement(label, var, expr, goto)                              : assignStatementExecute(var, expr, goto, configuration);
+            IfElseStatement(label, comparisonOp, lexpr, rexpr, ifGoto, elseGoto) : ifElseStatementExecute(comparisonOp, lexpr, rexpr, ifGoto, elseGoto, configuration);
+            PrintStatement(label, expr, goto)                                    : printStatementExcecute(expr, goto, configuration); 
+        }
+    }
 }
 
 addAllGoto(goto: [Label], state: MemoryState) -> Set<Configuration>{
@@ -275,6 +279,6 @@ executeVNemoProgram(program : VNemoProgram) -> void{
 	maxLabel = findMaxLabel(program.statements);
     initSet = buildSet([Configuration(0, initState(program.declarations))]); 
     exitPredicate = \s -> existsSet(s, \configuration -> configuration.label <= maxLabel);
-    nextStep = \s -> foldSet(s, makeSet(), \acc, configuration -> mergeSets(acc, executeNextStatement(program, configuration)));
+    nextStep = \s -> foldSet(s, makeSet(), \acc, configuration -> mergeSets(acc, executeNextStatement(program, configuration, maxLabel)));
 	ignore = for(initSet, exitPredicate, nextStep);
 }

@@ -1,0 +1,48 @@
+import ds/tree;
+import ds/set;
+import string;
+import lingo/pegcode/driver;
+import nemo/all;
+import nemo/vnemo/run;
+import nemo/run;
+
+vnemoTest(testFileName: string){
+    src = getFileContent(testFileName);
+    vnemoProg = str2VNemoProgram(src);
+    vnemoProgStr = vnemoProgram2str(vnemoProg);
+    println(vnemoProgStr);
+    println("\n------\n");
+    println(vnemoProg);
+}
+
+nemoTest(testFileName: string){
+    src = getFileContent(testFileName);
+    nemoProgram = str2program(src);
+    nemoProgramStr = program2str(nemoProgram);
+    println(nemoProgramStr);
+    println("\n------\n");
+    println(nemoProgram); 
+}
+
+VNemoExecuteTest(testFileName: string){
+    src = getFileContent(testFileName);
+    vnemoProg = str2VNemoProgram(src);
+    executeVNemoProgram(vnemoProg);
+}
+
+NemoExecuteTest(testFileName: string){
+    executeWithSaveVNemoSrc(testFileName, "translatedSrc.vnemo");
+}
+
+main() {
+    nemoTest("nemoTests/np3.nemo");
+    println("\n\n///////////////////////\n\n");
+    vnemoTest("VNemoTests/arrayReverse.vnemo");
+    println("\n\n///////////////////////\n\n");
+    VNemoExecuteTest("VNemoTests/arrayReverse.vnemo");
+    println("\n\n///////////////////////\n\n");
+    VNemoExecuteTest("VNemoTests/arrayReverse.vnemo");
+    println("\n\n///////////////////////\n\n");
+    NemoExecuteTest("nemoTests/np2.nemo");
+    quit(0);
+}

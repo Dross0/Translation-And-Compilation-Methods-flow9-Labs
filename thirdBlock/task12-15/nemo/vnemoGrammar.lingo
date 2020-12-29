@@ -1,6 +1,6 @@
 prog = ws declaration*:d ws statement*:s {VNemoProgram(:d, :s)};
 
-declaration = ws "var" ws name$n ws ":" ws type:t ws {Variable($n, :t)};
+declaration = ws "var" ws name$n ws ":" ws type:t ws ";" ws {Variable($n, :t)};
 
 type  = int | array;
 int   =  ws "int" ws {NemoInt()};

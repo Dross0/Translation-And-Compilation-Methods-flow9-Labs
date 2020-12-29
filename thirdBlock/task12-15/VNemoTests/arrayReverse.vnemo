@@ -1,9 +1,9 @@
-var src : [int]
-var reversed: [int]
-var len : int
-var index : int
-var stindex : int
-var endindex : int
+var src : [int];
+var reversed: [int];
+var len : int;
+var index : int;
+var stindex : int;
+var endindex : int;
 
 0: src := upd(src, 0, 1) goto {1}
 1: src := upd(src, 1, 100) goto {2}
